@@ -1,7 +1,8 @@
 **Introduction**
-This repository is for my notes to create an auto-pilot to control te setpoints of the devices in my EMS system. 
-It will make use of already existing predictive models for the solar production today, and tomorrow. And day-ahead prices. 
-It will make use of a state machine to avoid a spaghetti of automations. 
+This project provides a Model Predictive Control (MPC) based autopilot for Home Assistant. 
+Objective is to optimize import/buy and export/sell to the grid using solar, and a home battery. 
+It will make use of already existing forcast of solar production today, and tomorrow. And the day-ahead prices. 
+It will make use of a state machine to avoid a unmaintainable automation spaghetti.   
 
 **Bad economics** After testing my Anker SolarBank 3, E2700 for a week I realised that even in AI mode all my solar energy was used to 
 fill up the batterij in the morning, sell my solar for free in the afternoon, and use only 30 % during evening, and night. 
