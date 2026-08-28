@@ -15,9 +15,7 @@ Does it allow to export solar in the mroning instead already charging a 50% full
 When will it export or import, till how low or hign state of charge (SOC) ? 
 
 **Need self control**
-Looking around I found advanced control systems like zero-grid, solar-PID, HASAAS, but these control everything. 
-And not in the way I only need to provide long term (hours, minutes) setpoints for devives: solar, battery, e-boiler. 
-These smart devices control the short term (seconds) stuff themselves. 
+Looking around I found advanced controls like zero-grid, [EMHASS](https://github.com/davidusb-geek/emhass), [solar-PID](https://github.com/MarcelWepper/Inverter-Controller), and [battery_controller](https://github.com/bvweerd/battery_controller), but these control everything. And not in the way I only need to provide long term (hours, minutes) setpoints for devives: solar, battery, e-boiler. These smart devices control the short term (seconds) stuff themselves. 
 
 So my idea is to setup a setpoint controller. Soon found out that it it needs some kind of forecast for the solar. 
 A forecast for the load is nice, but for now of secondairy importance. 
@@ -38,7 +36,8 @@ An example is a car: most basic is states are STOP, IDLE and RUN. In each state 
 Do not inlude the gear in the model, unless you really have to. Or all the driver actions when in RUN. 
 
 **Desk research**
-Doing the intial desk research i found following article excactly saying this. 
+Doing my intial desk research i found following article that is excactly saying this. See refrences. 
+However its detailed design is behind an ebook paywall. Let's firts see what we can come up with ourselves. 
 
 **Basic STATES**
 I came up with various way to models the machine states. Based on grid activity or based on battery activity. <BR>
@@ -56,20 +55,6 @@ I settled for a MIXED states model. Also including the state that solar is very 
 | * Export-Solar | | **EXPORT-Solar** | Reverse of HOLD | Morning, P high, SOC 40-12, F good |
 | * Export-Battery | **Discharge to grid** | **EXPORT-Battery** | DISCHARGE, FULL | Evening, SOC 80, P high |
 
-=========================
-Grid based                Battery based       MIXED                        Reference              Typical 
-
-Balanced                  Balanced            BALANCE-Grid                 IDLE, SLEEP            Evening, night, steady, zero-grid
-                          Charge on solar     CHARGE-Solar                 CHARGE                 Morning, P low, SOC 20, F good 
-                                              EXPORT-Solar-Trim                                   Midday, P low, S high, trim solar     
-Import                                                    
- Import for loads         Discharge for load  IMPORT-Load                  --                     Midday, P low, S low, washing machine              
- Import for battery       Charge on grid      CHARGE-Grid                  EMERGENCY, FLOOR       Midday, P low, S low, F bad 
-Export 
- Export-Solar                                 EXPORT-Solar                 Reverse of HOLD        Morning, P high, SOC 40-12, F good 
- Export-Battery           Discharge to grid   EXPORT-Battery               DISCHARGE, FULL        Evening, SOC 80, P high,   
-
- 
 ### Legend
 
 | Parameter | Levels / Values | Unit |
