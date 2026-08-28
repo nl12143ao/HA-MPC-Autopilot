@@ -111,6 +111,16 @@ purely local hardware belongs on a local machine).
 
 **The 7-state machine** (every 5 minutes, one decision)
 
+State Machine Logic:
+
+- EMERGENCY: battery critically empty -> charge now
+- FLOOR: below reserve (25%) -> hold, grid covers house
+- CHARGE: current hour is on the cheap-hours plan
+- FULL: charge target (~95%) reached
+- DISCHARGE: expensive peak hour (>~38 ct)
+- HOLD: peak coming soon -> don't waste the charge
+- IDLE/SLEEP: nothing to do -> especially at night
+
 | State | When | Description / Action |
 | :--- | :--- | :--- |
 | **EMERGENCY** | Battery critically empty | Charge immediately from grid to protect battery health regardless of price. |
