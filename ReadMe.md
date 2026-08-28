@@ -86,7 +86,12 @@ EXPORT-Solar allows for a further discharge to grid, until 12%, to grid; If P hi
 
                                                           
 --------------------------------------------
-**Reference** 
+**References** 
+
+https://ideasatwork.nl/planner/
+
+Energy AutoPilot is a smart home energy planner that builds on your home energy management system (HEMS). It plans when your home uses energy and keeps demand in balance — so you get more from the setup you already have, and spend far less on new hardware.
+
 https://community.home-assistant.io/t/home-energy-autopilot-a-7-state-machine-that-buys-power-on-the-cheap-hours-architecture-real-numbers-lessons/1016310
 
 *Home Energy Autopilot: a 7-state machine that buys power on the cheap hours (architecture, real numbers, lessons)*
