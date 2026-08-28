@@ -11,8 +11,8 @@ Starting to play around the various settings in the app I found out that it coul
 But using AI or SELF consumption mode (net zero with P1) does not allow for export. For this, one needs to change 
 to DYNAMIC or CUSTOM mode. But when export is finished these modes start using the grid instead using my full battery?
 Tried again the AI/SMART mode and it behaves better since recent updates but for me it is a too black box. 
-Does it allow to export solar in the mroning instead already charging a 50% full battery ? 
-When will it export or import, till how low or hign state of charge (SOC) ? 
+Does it allow to export solar in the mroning instead already charging a 50% full battery? 
+When will it export or import, till how low or hign state of charge (SOC)? 
 
 **Need self control**
 Looking around I found advanced controls like zero-grid, [EMHASS](https://github.com/davidusb-geek/emhass), [solar-PID](https://github.com/MarcelWepper/Inverter-Controller), and [battery_controller](https://github.com/bvweerd/battery_controller), but these control everything. And not in the way I only need to provide long term (hours, minutes) setpoints for devives: solar, battery, e-boiler. These smart devices control the short term (seconds) stuff themselves. 
@@ -23,8 +23,8 @@ A forecast for the load is nice, but for now of secondairy importance.
 **Spaghetti automation**
 I soon found out that the initial automations in HA quickly end up in a spagethi of triggers, conditions and actions. 
 It was rapidly a mix of triggers based on price, solar, SOC, trim solar for negative prices, ...
-Suddenly the solar was trimmed down unnecessary to avoid export, but .. by what, why ? 
-How to keep track of triggers based on price ahead, solar forecast, net export at low price ?
+Suddenly the solar was trimmed down unnecessary to avoid export, but .. by what, why? 
+How to keep track of triggers based on price ahead, solar forecast, net export at low price?
 
 **State machine to the resque**
 Back at school we discovered the same for automations using PLC. Filling a water tank using a sensor and a valve is clear. 
