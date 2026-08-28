@@ -22,39 +22,86 @@ These smart devices control the short term (seconds) stuff themselves.
 So my idea is to setup a setpoint controller. Soon found out that it it needs some kind of forecast for the solar. 
 A forecast for the load is nice, but for now of secondairy importance. 
 
-**State machine**
-I soon found out that automations in HA quickly end up in a spagethi of triggers, conditions and actions. 
-Suddenly the solar is trimmed down to avoid export, but by what flow, why? 
-How to keep track of triggers based on price, solar forecast, 
+**Spaghetti automation**
+I soon found out that the initial automations in HA quickly end up in a spagethi of triggers, conditions and actions. 
+It was rapidly a mix of triggers based on price, solar, SOC, trim solar for negative prices, ...
+Suddenly the solar was trimmed down unnecessary to avoid export, but .. by what, why ? 
+How to keep track of triggers based on price ahead, solar forecast, net export at low price ?
 
+**State machine to the resque**
+Back at school we discovered the same for automations using PLC. Filling a water tank using a sensor and a valve is nice. 
+Adding a PID control makes it even better and all stays structured. But brewing beer as a complete proces is impossible like this.
+What we need is a pre-defined set of machine states. A single automation that controls only these main states. Some states may require a sub-state. 
+And in every state a local control is possible. The amount of states is a compromise between fine grained and complexity. Call it KISS. 
+An example is a car: most basic is states are STOP, IDLE and RUN. In each state some controls are active, but keep these out of the model! 
+Do not inlude the gear in the model, unless you really have to. Or all the driver actions when in RUN. 
 
+**Desk research**
+Doing the intial desk research i found following article excactly saying this. 
+
+**Basic STATES**
+I came up with various way to models the machine states. Based on grid activityn based on battery activity. I settled for battery based 
+
+| Grid based | Battery based | MIXED | Reference |
+| :--- | :--- | :--- | :--- |
+| **Balance** | | **BALANCE-Grid/Load** | Net-ZERO, IDLE, SLEEP |
+| | | **CHARGE-Solar** | CHARGE |
+| **Import** | | | |
+| * Import for loads | | **IMPORT-Load** | -- |
+| * Import for battery | | **CHARGE-Grid** | EMERGENCY, FLOOR |
+| **Export** | | | |
+| * Export-Solar | | **EXPORT-Solar** | -- |
+| * Export-Battery | | **EXPORT-Battery** | DISCHARGE, FULL |
+Grid based  Battery based    MIXED                        Reference 
+
+Balance                      BALANCE-Grid/Load            Net-ZERO, IDLE, SLEEP
+                             CHARGE-Solar                 CHARGE 
+Import                                                    
+ Import for loads            IMPORT-Load                  --             
+ Import for battery          CHARGE-Grid                  EMERGENCY, FLOOR 
+Export 
+ Export-Solar                EXPORT-Solar                 --  
+ Export-Battery              EXPORT-Battery               DISCHARGE, FULL
+                                                          
 --------------------------------------------
 **Reference** 
 https://community.home-assistant.io/t/home-energy-autopilot-a-7-state-machine-that-buys-power-on-the-cheap-hours-architecture-real-numbers-lessons/1016310
 
-Home Energy Autopilot: a 7-state machine that buys power on the cheap hours (architecture, real numbers, lessons)
+*Home Energy Autopilot: a 7-state machine that buys power on the cheap hours (architecture, real numbers, lessons)*
 post by CihanDE on Jul 6
 
 After years of just paying the electricity bill, I built a system where Home Assistant does the shopping: 
 it buys energy when it is cheap, stores it, and spends it when the grid is expensive. 
 Sharing the architecture here because most of the pieces are standard HA — the value is in how they are wired together.
 
-Measured result: a typical month went from ~€180 to €113. Averaged over the year we save €50–75/month; battery arbitrage alone contributes €0.60–1.00/day. (I live in Germany — hourly dynamic tariffs are widely available across Europe. The principles apply anywhere day-ahead prices exist in machine-readable form.)
+Measured result: a typical month went from ~€180 to €113. Averaged over the year we save €50–75/month; 
+battery arbitrage alone contributes €0.60–1.00/day. 
+The principles apply anywhere day-ahead prices exist in machine-readable form.)
 
 The four layers
-Hardware (on site): solar array, home battery (Anker Solix), smart meter, and the household loads. The battery is zero-export: surplus goes to storage, nothing is gifted to the grid — self-consumed kWh are worth 3–4× the feed-in rate here.
-Data: hourly exchange prices (day-ahead), weather forecast, a learned consumption profile per weekday, and live system status (SOC, solar W, grid W).
-Brain: Home Assistant + a few small helper scripts in Docker on a small VPS (€4.49/month — works for me only because the battery is cloud-connected anyway; purely local hardware belongs on a local machine).
-Action: steer the battery mode, shift loads (washing machine gets slot suggestions via Telegram, family taps one), buy from the grid only in planned cheap hours.
-The 7-state machine (every 5 minutes, one decision)
-State	When
-EMERGENCY	battery critically empty → charge now
-FLOOR	below reserve (25%) → hold, grid covers house
-CHARGE	current hour is on the cheap-hours plan
-FULL	charge target (~95%) reached
-DISCHARGE	expensive peak hour (>~38 ct)
-HOLD	peak coming soon → don't waste the charge
-IDLE/SLEEP	nothing to do → especially at night
+**Hardware** (on site): solar array, home battery (Anker Solix), smart meter, and the household loads. 
+_The battery is zero-export: surplus goes to storage, nothing is gifted to the grid — self-consumed kWh are worth 3–4× the feed-in rate here.
+_**Data**: hourly exchange prices (day-ahead), weather forecast, a learned consumption profile per weekday, and live system status (SOC, solar W, grid W).
+**Brain**: Home Assistant + a few small helper scripts in Docker on a small VPS (€4.49/month — works for me only because the battery is cloud-connected anyway; 
+purely local hardware belongs on a local machine).
+**Actions**: steer the battery mode, shift loads (washing machine gets slot suggestions via Telegram, family taps one), buy from the grid only in planned cheap hours.
+
+**The 7-state machine** (every 5 minutes, one decision)
+
+# State Machine Strategy: 7-State Energy Management System
+
+**The 7-state machine** (every 5 minutes, one decision)
+
+| State | When | Description / Action |
+| :--- | :--- | :--- |
+| **EMERGENCY** | Battery critically empty | Charge immediately from grid to protect battery health regardless of price. |
+| **FLOOR** | Below reserve (25%) | Hold charge; grid covers full household load to avoid deep discharge. |
+| **CHARGE** | Cheap-hours plan | Current hour falls within dynamic cheap-hours window; grid charges battery. |
+| **FULL** | Target reached (~95%) | Stop active charging; prevent overcharging and degradation. |
+| **DISCHARGE** | Expensive peak hour (>~38 ct) | Export / supply home load from battery during high-tariff periods. |
+| **HOLD** | Peak coming soon | Reserve/preserve stored energy; don't waste charge on standard loads before peak. |
+| **IDLE/SLEEP** | Nothing to do | Default state when no active conditions are met (especially at night). |
+
 Hysteresis everywhere (in at 25% / out at 55%), otherwise it flaps. "Sleep" only discharges at night if price, remaining charge AND a cheap recharge window all line up.
 
 The price pipeline
