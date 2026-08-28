@@ -3,7 +3,6 @@ This repository is for my notes to create an auto-pilot to control te setpoints 
 It will make use of already existing predictive models for the solar production today, and tomorrow. And day-ahead prices. 
 It will make use of a state machine to avoid a spaghetti of automations. 
 
-
 **Bad economics** After testing my Anker SolarBank 3, E2700 for a week I realised that even in AI mode all my solar energy was used to 
 fill up the batterij in the morning, sell my solar for free in the afternoon, and use only 30 % during evening, and night. 
 
@@ -14,7 +13,6 @@ Tried again the AI/SMART mode and it behaves better since recent updates but for
 Does it allow to export solar in the mroning instead already charging a 50% full battery ? 
 When will it export or import, till how low or hign state of charge (SOC) ? 
 
-
 **Need self control**
 Looking around I found advanced control systems like zero-grid, solar-PID, HASAAS, but these control everything. 
 And not in the way I only need to provide long term (hours, minutes) setpoints for devives: solar, battery, e-boiler. 
@@ -22,7 +20,6 @@ These smart devices control the short term (seconds) stuff themselves.
 
 So my idea is to setup a setpoint controller. Soon found out that it it needs some kind of forecast for the solar. 
 A forecast for the load is nice, but for now of secondairy importance. 
-
 
 **Spaghetti automation**
 I soon found out that the initial automations in HA quickly end up in a spagethi of triggers, conditions and actions. 
@@ -140,7 +137,6 @@ Fetch prices hourly (one JSON file as single source of truth)
   → compute tomorrow's plan in the afternoon (cheapest hours covering expected net demand = learned consumption minus expected solar) 
     → replan every 30 minutes with a 48h view → the state machine executes on the 5-minute beat.
 
-
 ## What cost me the most time (honest lessons) <BR>
 
 Cloud latency & hangs: the battery ignores a mode change now and then, sensors freeze with identical timestamps.  <BR>
@@ -167,6 +163,8 @@ Quick follow-up @IOT7712 — the importable blueprint is live now:
 [Blueprint: Home Energy Autopilot — charge cheap, discharge expensive](https://community.home-assistant.io/t/home-energy-autopilot-charge-the-battery-when-power-is-cheap-run-the-house-off-it-when-its-expensive/1018059)
 
 [eBook: The Home Energy Autopilot — cut your power bill with Home Assistant](http://cihanoezkaya.de/en)
+
+Pre-check https://cihanoezkaya.de/setup-en#check 
 
 ============================ 
 
