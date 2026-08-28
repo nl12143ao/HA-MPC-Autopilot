@@ -34,6 +34,8 @@ Real numbers from my own setup (Germany, balcony solar + one small battery):
 
 Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.
 
+https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fcihanoezkaya.de%2Fblueprint%2Fenergy_autopilot.yaml
+
 Feedback on the logic welcome — especially from anyone running a battery I haven’t tested against.
 
 post by CihanDE on Jul 25
