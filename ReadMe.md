@@ -40,21 +40,22 @@ Do not inlude the gear in the model, unless you really have to. Or all the drive
 Doing the intial desk research i found following article excactly saying this. 
 
 **Basic STATES**
-I came up with various way to models the machine states. Based on grid activityn based on battery activity. I settled for battery based 
+I came up with various way to models the machine states. Based on grid activity or based on battery activity. <BR>
+I settled for a MIXED states model. Also including the state that solar is very high, and export to grid has negative prices. <BR>
 
-| Grid based | Battery based | MIXED | Reference |
-| :--- | :--- | :--- | :--- |
-| **Balance** | | **BALANCE-Grid/Load** | Net-ZERO, IDLE, SLEEP |
-| | | **CHARGE-Solar** | CHARGE |
-| **Import** | | | |
-| * Import for loads | | **IMPORT-Load** | -- |
-| * Import for battery | | **CHARGE-Grid** | EMERGENCY, FLOOR |
-| **Export** | | | |
-| * Export-Solar | | **EXPORT-Solar** | -- |
-| * Export-Battery | | **EXPORT-Battery** | DISCHARGE, FULL |
+| Grid based | Battery based | MIXED | Reference | Typical |
+| :--- | :--- | :--- | :--- | :--- |
+| **Balanced** | **Balanced** | **BALANCE-Grid** | IDLE, SLEEP | Evening, night, steady, zero-grid |
+| | **Charge on solar** | **CHARGE-Solar** | CHARGE | Morning, P low, SOC 20, F good |
+| | | **EXPORT-Solar-Trim** | | Midday, P low, S high, trim solar |
+| **Import** | | | | |
+| * Import for loads | **Discharge for load** | **IMPORT-Load** | -- | Midday, P low, S low, washing machine |
+| * Import for battery | **Charge on grid** | **CHARGE-Grid** | EMERGENCY, FLOOR | Midday, P low, S low, F bad |
+| **Export** | | | | |
+| * Export-Solar | | **EXPORT-Solar** | Reverse of HOLD | Morning, P high, SOC 40-12, F good |
+| * Export-Battery | **Discharge to grid** | **EXPORT-Battery** | DISCHARGE, FULL | Evening, SOC 80, P high |
 
-
-
+=========================
 Grid based                Battery based       MIXED                        Reference              Typical 
 
 Balanced                  Balanced            BALANCE-Grid                 IDLE, SLEEP            Evening, night, steady, zero-grid
@@ -66,26 +67,22 @@ Import
 Export 
  Export-Solar                                 EXPORT-Solar                 Reverse of HOLD        Morning, P high, SOC 40-12, F good 
  Export-Battery           Discharge to grid   EXPORT-Battery               DISCHARGE, FULL        Evening, SOC 80, P high,   
+
+ 
 ### Legend
 
 | Parameter | Levels / Values | Unit |
 | :--- | :--- | :--- |
 | **Fc** (Forecast solar) | Good, Fair, Low, Bad | kWh/day | <BR>
 | **Pr** (Price) | High (100), Even (50), Low (5), NEG (0) | euro/MWh | <BR>
-| **Sol** (Solar) | Low (20), Medium (50), High (80) | % | <BR>
+| **Sol** (Solar actual) | Low (20), Medium (50), High (80) | % | <BR>
 | **SOC** (SOC) | Bottom (5), Low (20), Good (40), Medium (60), High (80) | % | <BR>
 
-Notes: 
-Night needs about SOC of 35% to cover baseloads, fridge, routers, lights until 08:00
-EXPORT-Battery allows for discharge to grid in evening to 35%, if price high and SOC high. 
-Morning needs about SOC of 12% to cover baseloads, and some water heaters until 10:00
-EXPORT-Solar allows for a further discharge to grid, until 12%, to grid; If P high, Forecast good.  
-
-
-Legend: 
-F = Forecast solar Good, Fair, Low, Bad                kWh/day 
-P = Price High 100, Even 50, Low 5, NEG 0              euro/MWh 
-S = SOC Bottom 5, Low 20, Good 40, Medium 60, High 80  %
+### Notes: 
+Night needs about SOC of 35% to cover baseloads, fridge, routers, lights until 08:00 <BR>
+EXPORT-Battery allows for discharge to grid in evening to 35%, if price high and SOC high <BR>
+Morning needs about SOC of 12% to cover baseloads, and some water heaters until 10:00 <BR>
+EXPORT-Solar allows for a further discharge to grid, until 12%, to grid; If P high, Forecast good <BR>
 
                                                           
 --------------------------------------------
@@ -130,11 +127,23 @@ purely local hardware belongs on a local machine).
 Hysteresis everywhere (in at 25% / out at 55%), otherwise it flaps. "Sleep" only discharges at night if price, remaining charge AND a cheap recharge window all line up.
 
 The price pipeline
-Fetch prices hourly (one JSON file as single source of truth) → compute tomorrow's plan in the afternoon (cheapest hours covering expected net demand = learned consumption minus expected solar) → replan every 30 minutes with a 48h view → the state machine executes on the 5-minute beat.
+Fetch prices hourly (one JSON file as single source of truth) 
+  → compute tomorrow's plan in the afternoon (cheapest hours covering expected net demand = learned consumption minus expected solar) 
+    → replan every 30 minutes with a 48h view → the state machine executes on the 5-minute beat.
 
-What cost me the most time (honest lessons)
-Cloud latency & hangs: the battery ignores a mode change now and then, sensors freeze with identical timestamps. Fix: a properly rated smart plug in front of the battery — 90s off/on forces a real reboot. My self-healing triggers it automatically when needed.
-Freshness checks before every action. A frozen sensor plus an eager automation is how you buy expensive power at 7 pm.
-Quality gates over features: every 15 min a checklist (prices loaded? plan computed? charged in the cheap window? SOC ready before peak?) rolls up into one health percentage on the dashboard. Most "failures" were bugs in my own checks — verify first, then repair.
-Only use officially supported battery modes. Undocumented ones hung the system for hours.
-Happy to answer questions about any layer — especially the state machine and the charging-plan logic. I also wrote the whole build up as a beginner-friendly field report (ebook) since friends kept asking; happy to point to it if that's within the forum rules.
+
+## What cost me the most time (honest lessons) <BR>
+
+Cloud latency & hangs: the battery ignores a mode change now and then, sensors freeze with identical timestamps.  <BR>
+Fix: a properly rated smart plug in front of the battery — 90s off/on forces a real reboot. My self-healing triggers it automatically when needed. <BR>
+
+Freshness checks before every action. A frozen sensor plus an eager automation is how you buy expensive power at 7 pm. <BR>
+
+Quality gates over features: every 15 min a checklist (prices loaded? plan computed? charged in the cheap window? 
+SOC ready before peak?) rolls up into one health percentage on the dashboard.  <BR>
+Most "failures" were bugs in my own checks — verify first, then repair. <BR>
+
+Only use officially supported battery modes. Undocumented ones hung the system for hours. <BR>
+Happy to answer questions about any layer — especially the state machine and the charging-plan logic. <BR>
+I also wrote the whole build up as a beginner-friendly field report (ebook) since friends kept asking; happy to point to it if that's within the forum rules. <BR>
+
