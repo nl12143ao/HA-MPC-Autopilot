@@ -3,7 +3,8 @@ This repository is for my notes to create an auto-pilot to control te setpoints 
 It will make use of already existing predictive models for the solar production today, and tomorrow. And day-ahead prices. 
 It will make use of a state machine to avoid a spaghetti of automations. 
 
-After testing my Anker SolarBank 3, E2700 for a week I realised that even in AI mode all my solar energy was used to 
+
+**Bad economics** After testing my Anker SolarBank 3, E2700 for a week I realised that even in AI mode all my solar energy was used to 
 fill up the batterij in the morning, sell my solar for free in the afternoon, and use only 30 % during evening, and night. 
 
 Starting to play around the various settings in the app I found out that it could be made far more economical. 
@@ -13,14 +14,15 @@ Tried again the AI/SMART mode and it behaves better since recent updates but for
 Does it allow to export solar in the mroning instead already charging a 50% full battery ? 
 When will it export or import, till how low or hign state of charge (SOC) ? 
 
+
 **Need self control**
 Looking around I found advanced control systems like zero-grid, solar-PID, HASAAS, but these control everything. 
-And not in the way 
-I only need to provide long term (hours, minutes) setpoints for devives: solar, battery, e-boiler. 
+And not in the way I only need to provide long term (hours, minutes) setpoints for devives: solar, battery, e-boiler. 
 These smart devices control the short term (seconds) stuff themselves. 
 
 So my idea is to setup a setpoint controller. Soon found out that it it needs some kind of forecast for the solar. 
 A forecast for the load is nice, but for now of secondairy importance. 
+
 
 **Spaghetti automation**
 I soon found out that the initial automations in HA quickly end up in a spagethi of triggers, conditions and actions. 
@@ -29,10 +31,11 @@ Suddenly the solar was trimmed down unnecessary to avoid export, but .. by what,
 How to keep track of triggers based on price ahead, solar forecast, net export at low price ?
 
 **State machine to the resque**
-Back at school we discovered the same for automations using PLC. Filling a water tank using a sensor and a valve is nice. 
-Adding a PID control makes it even better and all stays structured. But brewing beer as a complete proces is impossible like this.
-What we need is a pre-defined set of machine states. A single automation that controls only these main states. Some states may require a sub-state. 
-And in every state a local control is possible. The amount of states is a compromise between fine grained and complexity. Call it KISS. 
+Back at school we discovered the same for automations using PLC. Filling a water tank using a sensor and a valve is clear. 
+Even after adding a PID controller, to make it better, and all stays well structured. But brewing beer as a complete proces is impossible like this.
+What we need is a pre-defined set of machine states. And a 1 single automation that controls only these main states. 
+
+Yes, some states may require a sub-state. And in every state a local control is possible. The amount of states is a compromise between fine grained and complexity. Call it KISS. 
 An example is a car: most basic is states are STOP, IDLE and RUN. In each state some controls are active, but keep these out of the model! 
 Do not inlude the gear in the model, unless you really have to. Or all the driver actions when in RUN. 
 
@@ -96,17 +99,23 @@ After years of just paying the electricity bill, I built a system where Home Ass
 it buys energy when it is cheap, stores it, and spends it when the grid is expensive. 
 Sharing the architecture here because most of the pieces are standard HA — the value is in how they are wired together.
 
-Measured result: a typical month went from ~€180 to €113. Averaged over the year we save €50–75/month; 
-battery arbitrage alone contributes €0.60–1.00/day. 
-The principles apply anywhere day-ahead prices exist in machine-readable form.)
+Measured result: a typical month went from ~€180 to €113. Averaged over the year we save €50–75/month;  
+                 battery arbitrage alone contributes €0.60–1.00/day.  
+                 The principles apply anywhere day-ahead prices exist in machine-readable form.)  
+
 
 The four layers
-**Hardware** (on site): solar array, home battery (Anker Solix), smart meter, and the household loads. 
-_The battery is zero-export: surplus goes to storage, nothing is gifted to the grid — self-consumed kWh are worth 3–4× the feed-in rate here.
-_**Data**: hourly exchange prices (day-ahead), weather forecast, a learned consumption profile per weekday, and live system status (SOC, solar W, grid W).
+
+**Hardware** (on site): solar array, home battery (Anker Solix), smart meter, and the household loads.  
+The battery is zero-export: surplus goes to storage, nothing is gifted to the grid — self-consumed kWh are worth 3–4× the feed-in rate here.  
+
+**Data**: hourly exchange prices (day-ahead), weather forecast, a learned consumption profile per weekday, and live system status (SOC, solar W, grid W).  
+
 **Brain**: Home Assistant + a few small helper scripts in Docker on a small VPS (€4.49/month — works for me only because the battery is cloud-connected anyway; 
 purely local hardware belongs on a local machine).
+
 **Actions**: steer the battery mode, shift loads (washing machine gets slot suggestions via Telegram, family taps one), buy from the grid only in planned cheap hours.
+
 
 **The 7-state machine** (every 5 minutes, one decision)
 
