@@ -22,12 +22,12 @@ blueprint:
   input:
     price_sensor:
       name: Dynamic price sensor
-      description: A sensor whose state is the current electricity price (e.g. in â‚¬/kWh).
+      description: A sensor whose state is the current electricity price (e.g. in P/kWh).
       selector:
         entity:
           domain: sensor
     cheap_threshold:
-      name: Cheap threshold â€” charge at/below this price
+      name: Cheap threshold charge at/below this price
       description: When the current price is at or below this value, the battery charges.
       default: 0.20
       selector:
@@ -37,7 +37,7 @@ blueprint:
           step: 0.01
           mode: box
     expensive_threshold:
-      name: Expensive threshold â€” discharge at/above this price
+      name: Expensive threshold discharge at/above this price
       description: When the current price is at or above this value, run the house off the battery.
       default: 0.30
       selector:
@@ -84,7 +84,7 @@ blueprint:
         action: {}
     discharge_action:
       name: Discharge action
-      description: What to do to DISCHARGE â€” run the house off the battery.
+      description: What to do to DISCHARGE run the house off the battery.
       default: []
       selector:
         action: {}
@@ -99,8 +99,10 @@ mode: single
 max_exceeded: silent
 
 trigger:
+# When Price changes (eg each hour for dynamic tarif)
   - platform: state
     entity_id: !input price_sensor
+# Fallback trigger every 10 minutes 
   - platform: time_pattern
     minutes: "/5"
 
@@ -127,6 +129,6 @@ action:
           - "{{ price >= expensive_threshold }}"
           - "{{ (not soc_known) or (soc > discharge_min_soc) }}"
         sequence: !input discharge_action
-    # IDLE — neutral zone (between thresholds) or a guard blocked the action
+      # IDLE — neutral zone (between thresholds) or a guard blocked the action
     default: !input idle_action
     
