@@ -154,5 +154,42 @@ Most "failures" were bugs in my own checks — verify first, then repair. <BR>
 
 Only use officially supported battery modes. Undocumented ones hung the system for hours. <BR>
 Happy to answer questions about any layer — especially the state machine and the charging-plan logic. <BR>
+
+
+CihanDE, Jul 10
+Thanks! Quick clarification: it’s not a packaged app — it’s my own Home Assistant setup (the 7-state machine plus a few automations and a price-fetch pipeline) running on a small server.
+For further reading I wrote the whole build-up as a beginner-friendly field report, and there’s free background on my site: The Home Energy Autopilot — cut your power bill with Home Assistant
+I’m also planning to package the core charge-cheap / discharge-expensive logic as an importable Blueprint, so people can try it directly — I’ll post it here in Blueprints Exchange when it’s ready.
+
+CihanDE, Jul 25
+Quick follow-up @IOT7712 — the importable blueprint is live now: 
+
+[Blueprint: Home Energy Autopilot — charge cheap, discharge expensive](https://community.home-assistant.io/t/home-energy-autopilot-charge-the-battery-when-power-is-cheap-run-the-house-off-it-when-its-expensive/1018059)
+
+[eBook: The Home Energy Autopilot — cut your power bill with Home Assistant](http://cihanoezkaya.de/en)
+
+============================ 
+
+eBOOK Home Energy Autopilot — charge cheap, discharge expensive
+It’s just the decision layer (charge / discharge / idle), so it works with any battery you can already control from HA. Would be curious how it runs on your setup if you give it a try.
+
 I also wrote the whole build up as a beginner-friendly field report (ebook) since friends kept asking; happy to point to it if that's within the forum rules. <BR>
 
+The Home Energy Autopilot: How I Use Home Assistant, Solar Power and Hourly Electricity Prices to Cut My Bill Automatically - A Real-World Field Report (Beginner-Friendly)
+by Cihan Özkaya (Author)  Format: Kindle Edition
+See all formats and editions
+Your electricity bill is not a fixed cost. It just behaves like one - until something starts managing it.
+
+This book is not a theory guide. It is a field report: I show, step by step, how my household saves money automatically with a solar array, a home battery and an hourly electricity tariff - orchestrated by Home Assistant on a small server that never sleeps. One real summer month went from ~180 euros down to 113.
+
+You will learn:
+- Why TIMING beats adding more solar panels
+- How to exploit hourly wholesale electricity prices automatically (Octopus, Tibber, Nord Pool - works with any dynamic tariff)
+- How a home battery buys power when it is cheap and sells it back to your house when it is expensive
+- The complete architecture to rebuild: hardware, data, brain, action
+- A seven-state control machine, self-monitoring quality gates and an emergency brake for cloud-connected hardware
+- Honest numbers, honest limits - measured in live operation, no glossy promises
+
+Written for beginners who want savings, not a second job. Every step explained the way I understood it myself - plus the pitfalls that cost me the most time, so you can skip them.
+
+I run this system in Germany; the principles work wherever hourly electricity pricing exists - across Europe, the UK and beyond.
