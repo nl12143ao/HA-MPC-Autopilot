@@ -55,24 +55,32 @@ I came up with various way to models the machine states. Based on grid activityn
 
 
 
-Grid based  Battery based    MIXED                        Reference              Typical 
+Grid based                Battery based       MIXED                        Reference              Typical 
 
-Balance                      BALANCE-Grid/Load            IDLE, SLEEP            Evening, night, steady, zero-grid
-                             CHARGE-Solar                 CHARGE                 Morning, P high, SOC 20, F good 
+Balanced                  Balanced            BALANCE-Grid                 IDLE, SLEEP            Evening, night, steady, zero-grid
+                          Charge on solar     CHARGE-Solar                 CHARGE                 Morning, P low, SOC 20, F good 
+                                              EXPORT-Solar-Trim                                   Midday, P low, S high, trim solar     
 Import                                                    
- Import for loads            IMPORT-Load                  --             
- Import for battery          CHARGE-Grid                  EMERGENCY, FLOOR 
+ Import for loads         Discharge for load  IMPORT-Load                  --                     Midday, P low, S low, washing machine              
+ Import for battery       Charge on grid      CHARGE-Grid                  EMERGENCY, FLOOR       Midday, P low, S low, F bad 
 Export 
- Export-Solar                EXPORT-Solar                 Reverse of HOLD         
- Export-Battery              EXPORT-Battery               DISCHARGE, FULL        Evening, SOC 80, P high,   
-
+ Export-Solar                                 EXPORT-Solar                 Reverse of HOLD        Morning, P high, SOC 40-12, F good 
+ Export-Battery           Discharge to grid   EXPORT-Battery               DISCHARGE, FULL        Evening, SOC 80, P high,   
 ### Legend
 
 | Parameter | Levels / Values | Unit |
 | :--- | :--- | :--- |
-| **F** (Forecast solar) | Good, Fair, Low, Bad | kWh/day | <BR>
-| **P** (Price) | High (100), Even (50), Low (5), NEG (0) | euro/MWh | <BR>
-| **S** (SOC) | Bottom (5), Low (20), Good (40), Medium (60), High (80) | % | <BR>
+| **Fc** (Forecast solar) | Good, Fair, Low, Bad | kWh/day | <BR>
+| **Pr** (Price) | High (100), Even (50), Low (5), NEG (0) | euro/MWh | <BR>
+| **Sol** (Solar) | Low (20), Medium (50), High (80) | % | <BR>
+| **SOC** (SOC) | Bottom (5), Low (20), Good (40), Medium (60), High (80) | % | <BR>
+
+Notes: 
+Night needs about SOC of 35% to cover baseloads, fridge, routers, lights until 08:00
+EXPORT-Battery allows for discharge to grid in evening to 35%, if price high and SOC high. 
+Morning needs about SOC of 12% to cover baseloads, and some water heaters until 10:00
+EXPORT-Solar allows for a further discharge to grid, until 12%, to grid; If P high, Forecast good.  
+
 
 Legend: 
 F = Forecast solar Good, Fair, Low, Bad                kWh/day 
