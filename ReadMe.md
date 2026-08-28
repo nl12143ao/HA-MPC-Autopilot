@@ -70,9 +70,9 @@ Export
 
 | Parameter | Levels / Values | Unit |
 | :--- | :--- | :--- |
-| **F** (Forecast solar) | Good, Fair, Low, Bad | kWh/day |
-| **P** (Price) | High (100), Even (50), Low (5), NEG (0) | euro/MWh |
-| **S** (SOC) | Bottom (5), Low (20), Good (40), Medium (60), High (80) | % |
+| **F** (Forecast solar) | Good, Fair, Low, Bad | kWh/day | <BR>
+| **P** (Price) | High (100), Even (50), Low (5), NEG (0) | euro/MWh | <BR>
+| **S** (SOC) | Bottom (5), Low (20), Good (40), Medium (60), High (80) | % | <BR>
 
 Legend: 
 F = Forecast solar Good, Fair, Low, Bad                kWh/day 
