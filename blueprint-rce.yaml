@@ -102,9 +102,9 @@ trigger:
 # When Price changes (eg each hour for dynamic tarif)
   - platform: state
     entity_id: !input price_sensor
-# Fallback trigger every 10 minutes 
+# Every 10 minutes, to start/stop charging when SOC is reached   
   - platform: time_pattern
-    minutes: "/5"
+    minutes: "/10"
 
 variables:
   price_sensor: !input price_sensor
