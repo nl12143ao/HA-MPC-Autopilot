@@ -52,16 +52,33 @@ I came up with various way to models the machine states. Based on grid activityn
 | **Export** | | | |
 | * Export-Solar | | **EXPORT-Solar** | -- |
 | * Export-Battery | | **EXPORT-Battery** | DISCHARGE, FULL |
-Grid based  Battery based    MIXED                        Reference 
 
-Balance                      BALANCE-Grid/Load            Net-ZERO, IDLE, SLEEP
-                             CHARGE-Solar                 CHARGE 
+
+
+Grid based  Battery based    MIXED                        Reference              Typical 
+
+Balance                      BALANCE-Grid/Load            IDLE, SLEEP            Evening, night, steady, zero-grid
+                             CHARGE-Solar                 CHARGE                 Morning, P high, SOC 20, F good 
 Import                                                    
  Import for loads            IMPORT-Load                  --             
  Import for battery          CHARGE-Grid                  EMERGENCY, FLOOR 
 Export 
- Export-Solar                EXPORT-Solar                 --  
- Export-Battery              EXPORT-Battery               DISCHARGE, FULL
+ Export-Solar                EXPORT-Solar                 Reverse of HOLD         
+ Export-Battery              EXPORT-Battery               DISCHARGE, FULL        Evening, SOC 80, P high,   
+
+### Legend
+
+| Parameter | Levels / Values | Unit |
+| :--- | :--- | :--- |
+| **F** (Forecast solar) | Good, Fair, Low, Bad | kWh/day |
+| **P** (Price) | High (100), Even (50), Low (5), NEG (0) | euro/MWh |
+| **S** (SOC) | Bottom (5), Low (20), Good (40), Medium (60), High (80) | % |
+
+Legend: 
+F = Forecast solar Good, Fair, Low, Bad                kWh/day 
+P = Price High 100, Even 50, Low 5, NEG 0              euro/MWh 
+S = SOC Bottom 5, Low 20, Good 40, Medium 60, High 80  %
+
                                                           
 --------------------------------------------
 **Reference** 
